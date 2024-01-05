@@ -25,10 +25,14 @@ high_score = 0
 #ball vars
 ball_column = 2
 ball_row = 0
-ball_speed = 500
+ball_speed = 300
 ball_moved_time = 0
 ball_direction = 1 # positive being moving towards player
 ball_slope = 0 # -1 being moving up left 1 being moving up right
+prev_ball_column = ball_column
+prev_ball_row = ball_row
+older_prev_ball_column = None
+older_prev_ball_row = None
 
 display.set_pixel(ball_column, ball_row, 9)
 
@@ -86,8 +90,11 @@ while True:
     if current_time > ball_moved_time + ball_speed:
         
         ball_moved_time = current_time
+
+        older_prev_ball_column, older_prev_ball_row = prev_ball_column, prev_ball_row
         
-        
+        prev_ball_column = ball_column
+        prev_ball_row = ball_row
 
         if ball_row == 4:
             if ball_column == paddle_column[0] or ball_column == paddle_column[1]:
@@ -117,20 +124,24 @@ while True:
                 time_difference = current_time - button_pressed_time
 
 
-                if time_difference <= 750:
+                if time_difference <= 500:
                     if paddle_moved_direction == 'right':
-                        
-                        if ball_slope == -1:
-                            ball_slope = 0
-                        
-                        
-                    elif paddle_moved_direction == 'left':
-                        
                         if ball_slope == 1:
                             ball_slope = 0
+                        else:
+                            ball_slope = 1
+                            
+                    elif paddle_moved_direction == 'left':
+                        if ball_slope == -1:
+                            ball_slope = 0
+                        else:
+                            ball_slope = -1
+                # else:
+                    
+                #     ball_slope = 1
+                            
                         
-                else:
-                    ball_slope = 0
+                
     
 
                 
@@ -144,6 +155,17 @@ while True:
             
             display.set_pixel(ball_column, ball_row, 9)
 
+            if older_prev_ball_row is not None and older_prev_ball_column is not None:
+                display.set_pixel(older_prev_ball_column, older_prev_ball_row, 0)
+
+            # Update the trail position
+            # Check if the previous position is not out of bounds
+            if 0 <= prev_ball_row < 5 and 0 <= prev_ball_column < 5:
+                # Set the previous position of the ball to a dimmer light to create a trail effect
+                display.set_pixel(prev_ball_column, prev_ball_row, 5) # Adjust the brightness as needed
+
+            for col in paddle_column:
+                display.set_pixel(col, paddle_row, 9)
             iteration+=1
     
     
