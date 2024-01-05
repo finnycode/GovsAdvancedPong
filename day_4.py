@@ -162,7 +162,7 @@ while True:
             # Check if the previous position is not out of bounds
             if 0 <= prev_ball_row < 5 and 0 <= prev_ball_column < 5:
                 # Set the previous position of the ball to a dimmer light to create a trail effect
-                display.set_pixel(prev_ball_column, prev_ball_row, 5) # Adjust the brightness as needed
+                display.set_pixel(prev_ball_column, prev_ball_row, 3) # Adjust the brightness as needed
 
             for col in paddle_column:
                 display.set_pixel(col, paddle_row, 9)
