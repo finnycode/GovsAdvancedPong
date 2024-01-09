@@ -84,16 +84,11 @@ while True:
             ball_moved_time = 0
             ball_direction = 1 # positive being moving towards player
 
-            if int(gotten_message[4]) == 1 or int(gotten_message[4]) == 0:
-                ball_slope = int(gotten_message[4]) # -1 being moving up left 1 being moving up right 0 head on
-
-            else:
-                try:
-                    slope_str = gotten_message[4] + gotten_message[5]
-                    slope_str = int(slope_str)
-                    ball_slope = slope_str
-                except:
-                    pass
+            slope_str = 
+            if int(gotten_message[4]) == 0:
+                    ball_slope = gotten_message[4] # -1 being moving up left 1 being moving up right
+            if int(gotten_message)
+            ball_slope = int(ball_slope)
             
             
             prev_ball_column = ball_column
