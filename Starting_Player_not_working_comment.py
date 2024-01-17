@@ -10,65 +10,84 @@ import time as t
 import random
 import radio
 
+#set the radio group and turn it on so it will listen for the other microbit
 radio.config(group=5)
 
 radio.on()
 
-#paddle vars
+#paddle variables to determine the location of the paddle initial, and so we can track it in the program
 paddle_column = [0,1]
 paddle_row = 4
-display.set_pixel(paddle_column[0], paddle_row, 9)
-display.set_pixel(paddle_column[1], paddle_row, 9)
 hit_paddle = False
 paddle_moved_direction = 'straight'
 last_paddle_direction = None
 
-ball_on_my_side = True #lairds is false
-ball_is_on_my_side_again = False
+#display the paddle initially
 
+display.set_pixel(paddle_column[0], paddle_row, 9)
+display.set_pixel(paddle_column[1], paddle_row, 9)
+
+
+#score variables that we didnt implement 
 score = 0
 high_score = 0
         
 #ball vars
+
+ball_on_my_side = True #Receiving player's is set to False
+
+#x,y vars for ball
 ball_column = 2
 ball_row = 0
+
+#amount of ms that it takes for the ball to move again
 ball_speed = 300
+#records the time since the ball moved 
 ball_moved_time = 0
 ball_direction = 1 # positive being moving towards player
-ball_slope = 0 # -1 being moving up left 1 being moving up right
+ball_slope = 0 # -1 being moving up left 1 being moving up right, 0 being straight
+
+#variables to determine where the ball used to be so we can add a trail 
 prev_ball_column = ball_column
 prev_ball_row = ball_row
 older_prev_ball_column = None
 older_prev_ball_row = None
 
+#shows the ball initially
 display.set_pixel(ball_column, ball_row, 9)
 
-#button vars
+#button vars for input control
 
+#time since last button was pressed
 button_pressed_time = 0
 time_difference = 0
 collision_detected = False
-#sleep(500)
 
+
+
+#amount of times the ball has changed sides, so we can fix some early game functionality issues where the code would break lol
 iteration = 0
 
+#since this file is where the ball starts, its not listening for anything
 listen = False
 
-#game start loop 
-
+#this is to record if the player is touching the top button, if both players are, the game starts
 touching_logo = False
 
+#game start loop with touch button functionality
 
 while True:
     if pin_logo.is_touched():
         touching_logo == True
     if touching_logo:
-        radio.send('8')
-    start_now = radio.receive()
+        radio.send('8') #number 8 is ambiguous, doesnt matter as long as the other microbit is listening for 8 in this loop, and its different from other messages
+
+
+    start_now = radio.receive() #listening for a message from the other microbit to listen for it having the top button touched 
 
     start_now = str(start_now)
 
-    if start_now[0] == '8':
+    if start_now[0] == '8': #this code makes both microbits run at the same time if they are both touching the top button basically
         radio.send('9')
         radio.off()
         break
@@ -77,10 +96,13 @@ while True:
         if start_now == '9':
             radio.off()
             break
-    
+
+#now that the players have started the game, we continue
         
 
 current_time = running_time()
+
+#add 2 second buffer for the game
 
 stupid_loop_start = running_time()
 
@@ -90,6 +112,8 @@ while current_time < stupid_loop_start + 2000:
     current_time = running_time()
 
 current_time = 0 
+
+#first main loop for hitting the ball starts
 while True:
 
     #message = radio.receive()
@@ -100,9 +124,9 @@ while True:
     
     current_time = running_time()
 
-    
+    #this logic detects if a button is pressed, and moves the paddle accordingly
 
-    if button_a.was_pressed():
+    if button_a.was_pressed(): 
         button_pressed_time = current_time
         paddle_moved_direction = 'left'
         last_paddle_direction = 'left'
@@ -138,24 +162,26 @@ while True:
             pass
 
 
-    if current_time > ball_moved_time + ball_speed:
-        
-        ball_moved_time = current_time
 
-        older_prev_ball_column, older_prev_ball_row = prev_ball_column, prev_ball_row
+    #if the buffer between ball_moved_time and the current_time is greater than the ball speed, the code does all the stuff to make the game run (for 1 movement of the ball then it loops)
+    if current_time > ball_moved_time + ball_speed: 
+        
+        ball_moved_time = current_time #reset the buffer
+
+        older_prev_ball_column, older_prev_ball_row = prev_ball_column, prev_ball_row #for trailing
         
         prev_ball_column = ball_column
         prev_ball_row = ball_row
 
+        #if the ball is at the bottom of the screen, do collision detection and logic for hitting the paddle
         if ball_row == 4:
             if ball_column == paddle_column[0] or ball_column == paddle_column[1]:
                 ball_direction = -1
-                #ball_row += ball_direction
                 ball_moved_time = current_time
                 hit_paddle = True
             else:
-                display.show('L')
-                radio.send('L')
+                display.show('L') #if you miss, it displays an L here and sends an L
+                radio.send('w')
 
         if ball_column == 0:
             ball_slope = 1
