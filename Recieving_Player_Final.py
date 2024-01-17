@@ -37,6 +37,8 @@ older_prev_ball_column = None
 older_prev_ball_row = None
 
 ball_on_my_side = False
+
+#set radio group and turn it on to listen for other microbit
 radio.config(group=5)
 radio.on()
 
