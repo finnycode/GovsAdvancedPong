@@ -74,7 +74,7 @@ while True:
     if touching_logo:
         if start_now[0] == '9':
             break
-
+#stupid_loop delay for 2 seconds
 stupid_loop_start = 0
 
 
@@ -89,7 +89,7 @@ while current_time < stupid_loop_start + 2000:
     current_time = running_time()
 
 current_time = 0
-
+#Main game loop
 while True:
 
 
@@ -111,11 +111,11 @@ while True:
         
         if gotten_message[1] == '1' and ball_on_my_side == False:
             
-            #display.scroll(1)
+            
             ball_on_my_side == True
 
             listen = False
-    
+            #turn off radio
             
         
 
@@ -127,7 +127,7 @@ while True:
             #ball vars
             ball_column = 2
             ball_row = 0
-            ball_speed = 300
+            ball_speed = 300 # 3 ms between pixel movements
             ball_moved_time = 0
             ball_direction = 1 # positive being moving towards player
 
@@ -157,7 +157,7 @@ while True:
             message = None
 
 
-    #elif ball_on_my_side:
+    
             while True:
 
                 w_or_l = radio.receive()
@@ -168,13 +168,13 @@ while True:
                 current_time = running_time()
             
                 
-            
+                #Code for left movement
                 if button_a.was_pressed():
                     button_pressed_time = current_time
                     paddle_moved_direction = 'left'
                     last_paddle_direction = 'left'
                     if paddle_column[0] - 1 >= 0:
-                        
+                        # Move paddle left
                         display.set_pixel(paddle_column[0], paddle_row, 0)
                         display.set_pixel(paddle_column[1], paddle_row, 0)
                         
@@ -184,14 +184,14 @@ while True:
                         display.set_pixel(paddle_column[1], paddle_row, 9)
                     else:
                         pass
-            
+                # Code for moving right
                 if button_b.was_pressed():
                     button_pressed_time = current_time
                     paddle_moved_direction = 'right'
                     last_paddle_direction = 'right'
                     
                     if paddle_column[1] + 1 <= 4:
-            
+                    # move paddle right
                         display.set_pixel(paddle_column[0], paddle_row, 0)
                         display.set_pixel(paddle_column[1], paddle_row, 0)
                         
@@ -205,7 +205,7 @@ while True:
                         pass
             
             
-                if current_time > ball_moved_time + ball_speed:
+                if current_time > ball_moved_time + ball_speed:# wait 3 ms
                     
                     ball_moved_time = current_time
             
@@ -213,7 +213,7 @@ while True:
                     
                     prev_ball_column = ball_column
                     prev_ball_row = ball_row
-            
+                    # Check if ball hit the paddle
                     if ball_row == 4:
                         if ball_column == paddle_column[0] or ball_column == paddle_column[1]:
                             ball_direction = -1
@@ -221,17 +221,17 @@ while True:
                             ball_moved_time = current_time
                             hit_paddle = True
                         
-            
+                    # Check if ball hits left wall
                     if ball_column == 0:
                         ball_slope = 1
-            
+                    # Check if ball hits right wall
                     if ball_column == 4:
                         ball_slope = -1
             
-                    
+                    #Ball transfer between microbits
                     if ball_row == 0 and iteration > 0:
                         ball_direction = 1
-                        send_string = [1,ball_slope]
+                        send_string = [1,ball_slope]# The message "1" initializes the code on the other microbit
                         radio.send(str(send_string))
                         ball_on_my_side = False
                         display.set_pixel(ball_column, ball_row, 0)
@@ -240,10 +240,7 @@ while True:
                         break 
             
                     if ball_row < 5:
-            
-                        
-                            
-            
+                        # Check collision and change slope accordingly
                         if hit_paddle:
             
                             time_difference = current_time - button_pressed_time
@@ -274,7 +271,7 @@ while True:
                             hit_paddle = False
                         else:
                             display.set_pixel(ball_column, ball_row, 0)
-                            
+                         #Updates ball position using the slope and direction   
                         ball_column += ball_slope
                         ball_row += ball_direction
 
@@ -283,9 +280,9 @@ while True:
                         except:
                             radio.send('w')
                             display.show('L')
-            
+                            #if the ball position is unavailable send winning message to other microbit and present losing message
                         if older_prev_ball_row is not None and older_prev_ball_column is not None:
-                            display.set_pixel(older_prev_ball_column, older_prev_ball_row, 0)
+                            display.set_pixel(older_prev_ball_column, older_prev_ball_row, 0) #clear ball trail
             
                         # Update the trail position
                         # Check if the previous position is not out of bounds
@@ -299,5 +296,3 @@ while True:
             
             
       
-
-
