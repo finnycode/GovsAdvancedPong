@@ -58,6 +58,7 @@ listen = False
 
 touching_logo = False
 
+#loop runs to start game if both players touch top button
 
 while True:
     if pin_logo.is_touched():
@@ -78,11 +79,13 @@ while True:
             radio.off()
             break
     
-        
+
 
 current_time = running_time()
 
 stupid_loop_start = running_time()
+
+#2 second buffer
 
 radio.config(group=69)
 while current_time < stupid_loop_start + 2000:
@@ -90,9 +93,14 @@ while current_time < stupid_loop_start + 2000:
     current_time = running_time()
 
 current_time = 0 
+
+#main game loop
+
 while True:
 
     #message = radio.receive()
+
+    #configure radio again
 
     radio.on()
 
@@ -100,6 +108,8 @@ while True:
     
     current_time = running_time()
 
+
+    #code to move paddles left and right 
     
 
     if button_a.was_pressed():
@@ -137,15 +147,20 @@ while True:
         else:
             pass
 
+    # logic to move the ball, paddles, and do all of the game logic. more specfic comments below
 
     if current_time > ball_moved_time + ball_speed:
         
         ball_moved_time = current_time
 
+        # variables for the ball trail
+            
         older_prev_ball_column, older_prev_ball_row = prev_ball_column, prev_ball_row
         
         prev_ball_column = ball_column
         prev_ball_row = ball_row
+
+        #paddle collision logic
 
         if ball_row == 4:
             if ball_column == paddle_column[0] or ball_column == paddle_column[1]:
@@ -154,7 +169,7 @@ while True:
                 ball_moved_time = current_time
                 hit_paddle = True
             else:
-                display.show('L')
+                display.show('L') #ends the game if player misses and tells the other microbit that they've won
                 radio.send('L')
 
         if ball_column == 0:
@@ -375,6 +390,11 @@ while True:
                             #ball_row += ball_direction
                             ball_moved_time = current_time
                             hit_paddle = True
+                        else:
+                            display.show('L') #ends the game if player misses and tells the other microbit that they've won
+                            radio.send('L') #fix dis ASAP
+
+                        
                     
             
                     if ball_column == 0:
