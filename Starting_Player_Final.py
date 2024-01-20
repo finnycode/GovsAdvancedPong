@@ -9,9 +9,9 @@ from microbit import *
 import time as t
 import random
 import radio
-
+# Establish radio group
 radio.config(group=5)
-
+# Turn the radio on
 radio.on()
 
 #paddle vars
@@ -48,7 +48,7 @@ display.set_pixel(ball_column, ball_row, 9)
 button_pressed_time = 0
 time_difference = 0
 collision_detected = False
-#sleep(500)
+
 
 iteration = 0
 
@@ -265,6 +265,7 @@ while True:
         gotten_message = message
 
         if gotten_message[0] == 'w':
+        # Display 'W' on screen if "w" is recieved
             while True:
                 display.show('W')
         
@@ -275,24 +276,14 @@ while True:
             listen = False
     
     
-            #ball vars
+            # Reset ball vars
             ball_column = 2
             ball_row = 0
             ball_speed = 300
             ball_moved_time = 0
             ball_direction = 1 # positive being moving towards player
 
-            # if int(gotten_message[4]) == 1 or int(gotten_message[4]) == 0:
-            #     ball_slope = int(gotten_message[4]) # -1 being moving up left 1 being moving up right 0 head on
-
-            # else:
-            #     try:
-            #         slope_str = gotten_message[4] + gotten_message[5]
-            #         slope_str = int(slope_str)
-            #         ball_slope = slope_str
-            #     except:
-            #         pass
-
+           
             try:
                 ball_slope = int(gotten_message[4])
             except:
@@ -307,12 +298,12 @@ while True:
             
             display.set_pixel(ball_column, ball_row, 9)
             
-            #button vars
+            # Reset button vars
             
             button_pressed_time = 0
             time_difference = 0
             collision_detected = False
-            #sleep(500)
+            
             
             iteration = 0
             
@@ -320,8 +311,8 @@ while True:
             paddle_moved_direction = 'straight'
             last_paddle_direction = None
     
-            #message = None
-
+            
+        #Clear message and wait for the next loop
             gotten_message = '0'
 
             message = None
@@ -437,9 +428,7 @@ while True:
                                         ball_slope = 0
                                     else:
                                         ball_slope = -1
-                                # else:
-                                    
-                                #     ball_slope = 1
+                               
                                             
                                         
                                 
